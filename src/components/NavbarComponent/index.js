@@ -9,6 +9,22 @@ function NavbarComponent() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const checkout = async () => {
+    await fetch('http://localhost:4000/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify({items: cart.items})
+    }).then(response => {
+        return response.json();
+    }).then(response => {
+        if (response.url) {
+            window.location.assign(response.url) //fowarding user to stripe
+        }
+    })
+  }
+
   const productCount = cart.items.reduce(
     (sum, product) => sum + product.quantity,
     0
@@ -34,7 +50,7 @@ function NavbarComponent() {
                     <CartProduct key={index} id={product.id} quantity={product.quantity} />
                 ))}
                 <p>Total: {cart.getTotalCost().toFixed(2)}</p>
-                <Button variant="success">Buy now</Button>
+                <Button onClick={checkout} variant="success">Buy now</Button>
             </> 
             : <span>Empty cart</span>}
         </Modal.Body>
